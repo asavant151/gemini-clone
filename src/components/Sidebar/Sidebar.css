@@ -1,0 +1,143 @@
+.sidebar {
+  min-height: 100vh;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #f0f4f9;
+  padding: 25px 15px;
+}
+
+.sidebar img {
+  width: 20px;
+}
+
+.sidebar .menu {
+  display: block;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.sidebar .new-chat {
+  margin-top: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  background-color: #e6eaf1;
+  border-radius: 50px;
+  font-size: 14px;
+  color: #808080;
+  cursor: pointer;
+}
+
+.sidebar .recent {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 1.5s;
+}
+
+.sidebar .recent-title {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.sidebar .recent-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  padding-right: 48px; /* space for actions */
+  border-radius: 12px;
+  color: #282828;
+  cursor: pointer;
+  position: relative;
+}
+
+.sidebar .recent-entry:hover {
+  background-color: #e2e6eb;
+}
+
+.sidebar .bottom {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .bottom-item {
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+/* Dark theme overrides */
+body[data-theme="dark"] .sidebar {
+  background-color: #0f172a;
+}
+body[data-theme="dark"] .sidebar .new-chat {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+body[data-theme="dark"] .sidebar .recent-entry {
+  color: #e5e7eb;
+}
+body[data-theme="dark"] .sidebar .recent-entry:hover {
+  background-color: #1f2937;
+}
+/* Make all sidebar icons white-ish in dark */
+body[data-theme="dark"] .sidebar img {
+  filter: brightness(0) invert(1);
+}
+
+/* Edit/Delete actions */
+.sidebar .entry-actions {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  gap: 6px;
+}
+.sidebar .recent-entry:hover .entry-actions {
+  display: inline-flex;
+}
+
+.sidebar .icon-btn {
+  border: 1px solid #e5e7eb;
+  /* background: #ffffff; */
+  color: #111827;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  cursor: pointer;
+}
+.sidebar .icon-btn:hover { filter: brightness(0.96); }
+
+.sidebar .recent-edit-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #111827;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+/* Dark theme variants */
+body[data-theme="dark"] .sidebar .icon-btn {
+  background: #111827;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+body[data-theme="dark"] .sidebar .recent-edit-input {
+  background: #0f172a;
+  border-color: #374151;
+  color: #e5e7eb;
+}

@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Outfit", sans-serif;
+}
+
+#root,
+body,
+html {
+  min-height: 100vh;
+}
+
+#root {
+  /* display: flex; */
+  animation: fadeIn 1.5s;
+}
+
+.app {
+  display: flex;
+}
+
+/* Global theme colors */
+body {
+  background: #ffffff;
+  color: #111827;
+}
+
+body[data-theme="dark"] {
+  background: #0b1220;
+  color: #e5e7eb;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to top, #4b90ff, #ff5546, #4b90ff);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
