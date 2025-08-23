@@ -36,6 +36,101 @@ const Main = () => {
   } = React.useContext(Context);
   const { user, isSignedIn } = useUser();
 
+  const recognitionRef = React.useRef(null);
+  const [isRecording, setIsRecording] = React.useState(false);
+  const didSendRef = React.useRef(false);
+  const transcriptRef = React.useRef("");
+  const userStoppedRef = React.useRef(false);
+
+  const stopRecognition = React.useCallback(() => {
+    try {
+      const rec = recognitionRef.current;
+      if (rec) rec.stop();
+      if (rec) {
+        userStoppedRef.current = true;
+        rec.stop();
+      }
+    } catch {}
+    setIsRecording(false);
+  }, []);
+
+  const startRecognition = React.useCallback(() => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      alert("Speech recognition is not supported in this browser. Please use Chrome.");
+      return;
+    }
+    const rec = new SR();
+    recognitionRef.current = rec;
+    didSendRef.current = false;
+    rec.lang = "en-US";
+   rec.interimResults = true;
+   rec.continuous = false;
+    rec.lang = "en-US";
+    rec.interimResults = true;
+    rec.continuous = true; // keep listening until user stops
+    transcriptRef.current = "";
+    userStoppedRef.current = false;
+
+    let finalTranscript = "";
+
+    rec.onstart = () => setIsRecording(true);
+    rec.onresult = (event) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const res = event.results[i];
+        if (res.isFinal) {
+          finalTranscript += res[0].transcript;
+        } else {
+          interim += res[0].transcript;
+        }
+      }
+      // Show interim in the input while speaking
+     if (interim) setInput((prev) => (finalTranscript ? finalTranscript + " " + interim : interim));
+      transcriptRef.current = finalTranscript;
+      // Show final+interim in input while speaking
+      const display = (finalTranscript + (interim ? " " + interim : "")).trim();
+      if (display) setInput(display);
+    };
+    rec.onerror = () => {
+      setIsRecording(false);
+    };
+    rec.onend = () => {
+      setIsRecording(false);
+      // Commit final transcript and auto-send
+      if (finalTranscript.trim()) {
+        setInput(finalTranscript.trim());
+        if (!didSendRef.current) {
+         didSendRef.current = true;
+          setTimeout(() => onSent(), 0);
+        }
+      }
+      // Only send when user explicitly stopped via mic
+      if (userStoppedRef.current) {
+        userStoppedRef.current = false;
+        const text = (transcriptRef.current || finalTranscript).trim();
+        if (text && !didSendRef.current) {
+          didSendRef.current = true;
+          setInput(text);
+          setTimeout(() => onSent(), 0);
+        }
+      }
+    };
+
+    try {
+      rec.start();
+    } catch {}
+  }, [onSent, setInput]);
+
+  const onMicClick = () => {
+    if (isRecording) {
+      stopRecognition();
+    } else {
+      startRecognition();
+    }
+  };
+  React.useEffect(() => () => stopRecognition(), [stopRecognition]);
+
   // Apply theme to <body> and load hljs theme CSS
   React.useEffect(() => {
     document.body.setAttribute("data-theme", theme);
@@ -218,7 +313,7 @@ const Main = () => {
         )}
 
         <div className="main-bottom">
-          <div className="search-box">
+          <div className={`search-box ${isRecording ? "recording" : ""}`}>
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -262,7 +357,23 @@ const Main = () => {
                   onChange={onFileChange}
                 />
               </div>
-              <img src={assets.mic_icon} alt="" />
+              {/* <img src={assets.mic_icon} alt="" /> */}
+              <img
+                 src={assets.mic_icon}
+                 alt={isRecording ? "Stop recording" : "Start voice input"}
+                 onClick={onMicClick}
+                 role="button"
+                 aria-pressed={isRecording}
+               />
+               {isRecording && (
+                 <div className="voice-wave" aria-hidden="true">
+                   <span></span>
+                   <span></span>
+                   <span></span>
+                   <span></span>
+                   <span></span>
+                 </div>
+               )}
               {input || (attachedImages && attachedImages.length > 0) ? (
                 <img src={assets.send_icon} alt="" onClick={() => onSent()} />
               ) : null}
